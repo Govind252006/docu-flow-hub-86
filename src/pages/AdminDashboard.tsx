@@ -37,12 +37,14 @@ const AdminDashboard = () => {
         
         <main className="flex-1 overflow-hidden">
           {/* Header */}
-          <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="border-b bg-gradient-hero/10 backdrop-blur supports-[backdrop-filter]:bg-gradient-hero/5">
             <div className="flex h-16 items-center px-6">
               <SidebarTrigger className="mr-4" />
               <div className="flex items-center justify-between w-full">
-                <div>
-                  <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
+                <div className="animate-fade-in">
+                  <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent">
+                    Admin Dashboard
+                  </h1>
                   <p className="text-sm text-muted-foreground">
                     Welcome back, Admin
                   </p>
@@ -64,43 +66,55 @@ const AdminDashboard = () => {
           <div className="p-6 space-y-6">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="p-6">
+              <Card className="p-6 bg-gradient-card border-0 shadow-lg hover:shadow-glow transition-all duration-300 animate-fade-in">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Total Users</p>
-                    <p className="text-3xl font-bold">24</p>
+                    <p className="text-3xl font-bold text-primary">24</p>
+                    <p className="text-xs text-success mt-1">+3 this week</p>
                   </div>
-                  <Users className="w-8 h-8 text-primary" />
+                  <div className="p-3 bg-primary/10 rounded-lg">
+                    <Users className="w-8 h-8 text-primary" />
+                  </div>
                 </div>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 bg-gradient-card border-0 shadow-lg hover:shadow-glow transition-all duration-300 animate-fade-in">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Active Managers</p>
-                    <p className="text-3xl font-bold">6</p>
+                    <p className="text-3xl font-bold text-success">6</p>
+                    <p className="text-xs text-success mt-1">All online</p>
                   </div>
-                  <Shield className="w-8 h-8 text-success" />
+                  <div className="p-3 bg-success/10 rounded-lg">
+                    <Shield className="w-8 h-8 text-success" />
+                  </div>
                 </div>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 bg-gradient-card border-0 shadow-lg hover:shadow-glow transition-all duration-300 animate-fade-in">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Documents</p>
-                    <p className="text-3xl font-bold">142</p>
+                    <p className="text-3xl font-bold text-accent">142</p>
+                    <p className="text-xs text-accent mt-1">12 pending review</p>
                   </div>
-                  <FileText className="w-8 h-8 text-warning" />
+                  <div className="p-3 bg-accent/10 rounded-lg">
+                    <FileText className="w-8 h-8 text-accent" />
+                  </div>
                 </div>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 bg-gradient-card border-0 shadow-lg hover:shadow-glow transition-all duration-300 animate-fade-in">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Tasks Today</p>
-                    <p className="text-3xl font-bold">15</p>
+                    <p className="text-3xl font-bold text-info">15</p>
+                    <p className="text-xs text-info mt-1">3 high priority</p>
                   </div>
-                  <BarChart3 className="w-8 h-8 text-accent" />
+                  <div className="p-3 bg-info/10 rounded-lg">
+                    <BarChart3 className="w-8 h-8 text-info" />
+                  </div>
                 </div>
               </Card>
             </div>
@@ -177,9 +191,11 @@ const AdminDashboard = () => {
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+              <Card className="p-6 bg-gradient-card border-0 shadow-lg hover:shadow-glow hover:scale-105 transition-all duration-300 cursor-pointer group">
                 <div className="text-center space-y-4">
-                  <Plus className="w-12 h-12 text-primary mx-auto" />
+                  <div className="p-4 bg-primary/10 rounded-full w-fit mx-auto group-hover:bg-primary/20 transition-colors">
+                    <Plus className="w-12 h-12 text-primary" />
+                  </div>
                   <div>
                     <h4 className="font-semibold">Create User</h4>
                     <p className="text-sm text-muted-foreground">
@@ -189,9 +205,11 @@ const AdminDashboard = () => {
                 </div>
               </Card>
 
-              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+              <Card className="p-6 bg-gradient-card border-0 shadow-lg hover:shadow-glow hover:scale-105 transition-all duration-300 cursor-pointer group">
                 <div className="text-center space-y-4">
-                  <Upload className="w-12 h-12 text-success mx-auto" />
+                  <div className="p-4 bg-success/10 rounded-full w-fit mx-auto group-hover:bg-success/20 transition-colors">
+                    <Upload className="w-12 h-12 text-success" />
+                  </div>
                   <div>
                     <h4 className="font-semibold">Upload Document</h4>
                     <p className="text-sm text-muted-foreground">
@@ -201,9 +219,11 @@ const AdminDashboard = () => {
                 </div>
               </Card>
 
-              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+              <Card className="p-6 bg-gradient-card border-0 shadow-lg hover:shadow-glow hover:scale-105 transition-all duration-300 cursor-pointer group">
                 <div className="text-center space-y-4">
-                  <Settings className="w-12 h-12 text-warning mx-auto" />
+                  <div className="p-4 bg-warning/10 rounded-full w-fit mx-auto group-hover:bg-warning/20 transition-colors">
+                    <Settings className="w-12 h-12 text-warning" />
+                  </div>
                   <div>
                     <h4 className="font-semibold">System Settings</h4>
                     <p className="text-sm text-muted-foreground">

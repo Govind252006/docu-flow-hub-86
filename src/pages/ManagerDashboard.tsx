@@ -65,12 +65,14 @@ const ManagerDashboard = () => {
         
         <main className="flex-1 overflow-hidden">
           {/* Header */}
-          <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="border-b bg-gradient-accent/10 backdrop-blur supports-[backdrop-filter]:bg-gradient-accent/5">
             <div className="flex h-16 items-center px-6">
               <SidebarTrigger className="mr-4" />
               <div className="flex items-center justify-between w-full">
-                <div>
-                  <h1 className="text-2xl font-semibold">Manager Dashboard</h1>
+                <div className="animate-fade-in">
+                  <h1 className="text-2xl font-bold bg-gradient-accent bg-clip-text text-transparent">
+                    Manager Dashboard
+                  </h1>
                   <p className="text-sm text-muted-foreground">
                     Engineering Department • Welcome back, John
                   </p>
@@ -82,47 +84,55 @@ const ManagerDashboard = () => {
           <div className="p-6 space-y-6">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="p-6">
+              <Card className="p-6 bg-gradient-card border-0 shadow-lg hover:shadow-glow transition-all duration-300 animate-fade-in">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">My Tasks</p>
-                    <p className="text-3xl font-bold">8</p>
-                    <p className="text-xs text-muted-foreground mt-1">3 pending</p>
+                    <p className="text-3xl font-bold text-success">8</p>
+                    <p className="text-xs text-warning mt-1">3 pending</p>
                   </div>
-                  <CheckCircle className="w-8 h-8 text-success" />
+                  <div className="p-3 bg-success/10 rounded-lg">
+                    <CheckCircle className="w-8 h-8 text-success" />
+                  </div>
                 </div>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 bg-gradient-card border-0 shadow-lg hover:shadow-glow transition-all duration-300 animate-fade-in">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Documents</p>
-                    <p className="text-3xl font-bold">24</p>
-                    <p className="text-xs text-muted-foreground mt-1">2 need review</p>
+                    <p className="text-3xl font-bold text-primary">24</p>
+                    <p className="text-xs text-destructive mt-1">2 need review</p>
                   </div>
-                  <FileText className="w-8 h-8 text-primary" />
+                  <div className="p-3 bg-primary/10 rounded-lg">
+                    <FileText className="w-8 h-8 text-primary" />
+                  </div>
                 </div>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 bg-gradient-card border-0 shadow-lg hover:shadow-glow transition-all duration-300 animate-fade-in">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Team Members</p>
-                    <p className="text-3xl font-bold">12</p>
-                    <p className="text-xs text-muted-foreground mt-1">All active</p>
+                    <p className="text-3xl font-bold text-accent">12</p>
+                    <p className="text-xs text-success mt-1">All active</p>
                   </div>
-                  <Users className="w-8 h-8 text-accent" />
+                  <div className="p-3 bg-accent/10 rounded-lg">
+                    <Users className="w-8 h-8 text-accent" />
+                  </div>
                 </div>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 bg-gradient-card border-0 shadow-lg hover:shadow-glow transition-all duration-300 animate-fade-in">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Completion Rate</p>
-                    <p className="text-3xl font-bold">94%</p>
+                    <p className="text-3xl font-bold text-success">94%</p>
                     <p className="text-xs text-success mt-1">+5% from last week</p>
                   </div>
-                  <TrendingUp className="w-8 h-8 text-success" />
+                  <div className="p-3 bg-success/10 rounded-lg">
+                    <TrendingUp className="w-8 h-8 text-success" />
+                  </div>
                 </div>
               </Card>
             </div>
@@ -212,7 +222,7 @@ const ManagerDashboard = () => {
             </div>
 
             {/* Performance Charts */}
-            <Card className="p-6">
+            <Card className="p-6 bg-gradient-card border-0 shadow-lg">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold flex items-center">
                   <BarChart3 className="w-5 h-5 mr-2" />
@@ -224,8 +234,59 @@ const ManagerDashboard = () => {
                 </div>
               </div>
               
-              <div className="h-64 bg-muted/30 rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Performance charts will be displayed here</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="h-48">
+                  <h4 className="text-sm font-medium mb-3 text-muted-foreground">Task Progress</h4>
+                  <div className="h-full bg-gradient-primary/5 rounded-lg p-4 border">
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm">This Week</span>
+                          <span className="text-sm font-semibold">75%</span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-3">
+                          <div className="bg-primary h-3 rounded-full animate-pulse" style={{ width: '75%' }}></div>
+                        </div>
+                      </div>
+                      
+                      <div className="relative">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm">Last Week</span>
+                          <span className="text-sm font-semibold">68%</span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-3">
+                          <div className="bg-muted-foreground h-3 rounded-full" style={{ width: '68%' }}></div>
+                        </div>
+                      </div>
+                      
+                      <div className="text-center pt-2">
+                        <span className="text-sm text-success font-medium">↗ +7% improvement</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="h-48">
+                  <h4 className="text-sm font-medium mb-3 text-muted-foreground">Team Activity</h4>
+                  <div className="h-full bg-gradient-accent/5 rounded-lg p-4 border">
+                    <div className="space-y-2">
+                      {[
+                        { name: 'Active Members', value: '12/12', color: 'bg-success' },
+                        { name: 'Tasks Completed', value: '45', color: 'bg-primary' },
+                        { name: 'Avg. Response Time', value: '2.3h', color: 'bg-accent' },
+                        { name: 'Quality Score', value: '94%', color: 'bg-info' }
+                      ].map((metric, index) => (
+                        <div key={index} className="flex items-center justify-between p-2 rounded-md bg-background/50">
+                          <div className="flex items-center space-x-2">
+                            <div className={`w-2 h-2 rounded-full ${metric.color}`}></div>
+                            <span className="text-sm">{metric.name}</span>
+                          </div>
+                          <span className="text-sm font-semibold">{metric.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </Card>
           </div>
