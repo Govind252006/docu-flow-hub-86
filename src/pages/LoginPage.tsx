@@ -13,9 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const LoginPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { signIn, signUp, user, getUserRole } = useAuth();
+  const { signIn, signUp, user, getUserRole, loading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
@@ -27,27 +27,38 @@ const LoginPage = () => {
     department: "",
   });
 
+  console.log('LoginPage - user:', user, 'loading:', loading);
+
   useEffect(() => {
-    // Redirect if already logged in
+    // Only redirect if user is definitely authenticated and we have their data
     const checkUserAndRedirect = async () => {
-      if (user) {
-        const role = await getUserRole();
-        if (role === 'admin') {
-          navigate('/admin/dashboard');
-        } else if (role === 'manager') {
-          navigate('/manager/dashboard');
-        } else {
-          navigate('/');
+      if (user && !loading) {
+        try {
+          console.log('User is authenticated, checking role...');
+          const role = await getUserRole();
+          console.log('User role:', role);
+          if (role === 'admin') {
+            navigate('/admin/dashboard');
+          } else if (role === 'manager') {
+            navigate('/manager/dashboard');
+          } else {
+            navigate('/');
+          }
+        } catch (error) {
+          console.error('Error getting user role:', error);
+          // Don't redirect on error, let user stay on login page
         }
       }
     };
     
-    checkUserAndRedirect();
-  }, [user, navigate, getUserRole]);
+    // Add a small delay to prevent immediate redirects
+    const timeoutId = setTimeout(checkUserAndRedirect, 100);
+    return () => clearTimeout(timeoutId);
+  }, [user, loading, navigate, getUserRole]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setFormLoading(true);
     
     try {
       const { error } = await signIn(credentials.email, credentials.password);
@@ -80,13 +91,13 @@ const LoginPage = () => {
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setFormLoading(false);
     }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setFormLoading(true);
     
     try {
       const { error } = await signUp(
@@ -118,9 +129,18 @@ const LoginPage = () => {
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setFormLoading(false);
     }
   };
+
+  // Show loading screen while auth is initializing
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 flex items-center justify-center p-6">
@@ -202,14 +222,14 @@ const LoginPage = () => {
                   type="submit" 
                   className="w-full mt-6 h-12 text-base" 
                   variant="hero"
-                  disabled={loading}
+                  disabled={formLoading}
                 >
-                  {loading ? (
+                  {formLoading ? (
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
                   ) : (
                     <Lock className="w-4 h-4 mr-2" />
                   )}
-                  {loading ? "Signing in..." : "Sign In"}
+                  {formLoading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
             </TabsContent>
@@ -291,14 +311,14 @@ const LoginPage = () => {
                   type="submit" 
                   className="w-full mt-6 h-12 text-base" 
                   variant="hero"
-                  disabled={loading}
+                  disabled={formLoading}
                 >
-                  {loading ? (
+                  {formLoading ? (
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
                   ) : (
                     <User className="w-4 h-4 mr-2" />
                   )}
-                  {loading ? "Creating account..." : "Create Account"}
+                  {formLoading ? "Creating account..." : "Create Account"}
                 </Button>
               </form>
             </TabsContent>
