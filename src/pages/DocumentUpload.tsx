@@ -5,16 +5,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
+import { Upload, FileText, AlertCircle, CheckCircle, FileImage, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
+import { OCRService } from '@/utils/OCRService';
+import { Progress } from '@/components/ui/progress';
 
 const DocumentUpload = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState(0);
+  const [showExtractedText, setShowExtractedText] = useState(false);
+  const [extractedText, setExtractedText] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -40,10 +45,34 @@ const DocumentUpload = () => {
     5: { label: 'Critical', color: 'bg-red-700' },
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormData({ ...formData, file });
+      
+      // Automatically run OCR on supported file types
+      if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
+        setOcrProgress(10);
+        try {
+          console.log('Starting OCR processing...');
+          const ocrResult = await OCRService.extractText(file);
+          setExtractedText(ocrResult.text);
+          setOcrProgress(100);
+          
+          toast({
+            title: 'OCR Complete',
+            description: `Text extracted with ${Math.round(ocrResult.confidence)}% confidence`,
+          });
+        } catch (error: any) {
+          console.error('OCR failed:', error);
+          setOcrProgress(0);
+          toast({
+            title: 'OCR Failed',
+            description: error.message || 'Could not extract text from file',
+            variant: 'destructive',
+          });
+        }
+      }
     }
   };
 
@@ -54,25 +83,33 @@ const DocumentUpload = () => {
     setUploading(true);
     
     try {
-      // Upload file to Supabase Storage (we'll create this bucket)
+      // Upload file to Supabase Storage
       const fileExt = formData.file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
       
-      // For now, we'll just store the document metadata without actual file upload
-      // In production, you'd upload to Supabase Storage first
-      
-      const { error } = await supabase.from('documents').insert({
+      console.log('Uploading file to Supabase Storage...');
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(fileName, formData.file);
+
+      if (uploadError) throw uploadError;
+
+      console.log('File uploaded successfully:', uploadData.path);
+
+      // Save document metadata to database
+      const { error: dbError } = await supabase.from('documents').insert({
         title: formData.title,
         description: formData.description,
-        file_path: fileName,
+        file_path: uploadData.path,
         file_type: formData.file.type,
         department: formData.department,
         priority: formData.priority,
         uploaded_by: user.id,
-        status: 'pending'
+        status: 'pending',
+        extracted_text: extractedText || null
       });
 
-      if (error) throw error;
+      if (dbError) throw dbError;
 
       toast({
         title: 'Document uploaded successfully',
@@ -87,12 +124,16 @@ const DocumentUpload = () => {
         priority: 1,
         file: null,
       });
+      setExtractedText('');
+      setOcrProgress(0);
+      setShowExtractedText(false);
 
       // Reset file input
       const fileInput = document.getElementById('file-upload') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
 
     } catch (error: any) {
+      console.error('Upload failed:', error);
       toast({
         title: 'Upload failed',
         description: error.message || 'Failed to upload document',
@@ -208,6 +249,11 @@ const DocumentUpload = () => {
                 <p className="text-sm text-muted-foreground mt-2">
                   Supports: PDF, DOC, DOCX, PNG, JPG, WEBP, MP3, MP4 (Max 20MB)
                 </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  <FileImage className="w-3 h-3 inline mr-1" />
+                  PDF and image files will be automatically processed with OCR
+                </p>
+                
                 {formData.file && (
                   <div className="mt-4 p-3 bg-accent/20 rounded-lg border border-border/30">
                     <div className="flex items-center justify-center gap-2 text-sm">
@@ -217,6 +263,48 @@ const DocumentUpload = () => {
                         {(formData.file.size / 1024 / 1024).toFixed(2)} MB
                       </Badge>
                     </div>
+                  </div>
+                )}
+
+                {/* OCR Progress */}
+                {ocrProgress > 0 && ocrProgress < 100 && (
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between text-sm mb-2">
+                      <span>Processing OCR...</span>
+                      <span>{ocrProgress}%</span>
+                    </div>
+                    <Progress value={ocrProgress} className="h-2" />
+                  </div>
+                )}
+
+                {/* Extracted Text Preview */}
+                {extractedText && (
+                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2 text-sm font-medium text-blue-700 dark:text-blue-300">
+                        <FileText className="w-4 h-4" />
+                        Extracted Text
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowExtractedText(!showExtractedText)}
+                        className="h-6 w-6 p-0"
+                      >
+                        {showExtractedText ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                      </Button>
+                    </div>
+                    {showExtractedText && (
+                      <div className="text-xs text-blue-600 dark:text-blue-400 bg-white/50 dark:bg-gray-800/50 p-2 rounded max-h-32 overflow-y-auto">
+                        {extractedText.length > 200 
+                          ? `${extractedText.substring(0, 200)}...` 
+                          : extractedText}
+                      </div>
+                    )}
+                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                      {extractedText.length} characters extracted
+                    </p>
                   </div>
                 )}
               </div>

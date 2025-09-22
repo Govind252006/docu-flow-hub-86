@@ -68,6 +68,7 @@ export type Database = {
           created_at: string
           department: string
           description: string | null
+          extracted_text: string | null
           file_path: string | null
           file_type: string | null
           id: string
@@ -82,6 +83,7 @@ export type Database = {
           created_at?: string
           department: string
           description?: string | null
+          extracted_text?: string | null
           file_path?: string | null
           file_type?: string | null
           id?: string
@@ -96,6 +98,7 @@ export type Database = {
           created_at?: string
           department?: string
           description?: string | null
+          extracted_text?: string | null
           file_path?: string | null
           file_type?: string | null
           id?: string
