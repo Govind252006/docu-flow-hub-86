@@ -15,23 +15,17 @@ import {
   CheckCircle,
   FileText,
   Upload,
-  Search,
-  Users,
+  MessageCircle,
   LogOut,
   Home,
-  Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const managerMenuItems = [
   { title: "Dashboard", url: "/manager/dashboard", icon: Home },
-  { title: "My Tasks", url: "/manager/tasks", icon: CheckCircle },
-  { title: "Documents", url: "/manager/documents", icon: FileText },
-  { title: "Upload Files", url: "/manager/upload", icon: Upload },
-  { title: "Team Reports", url: "/manager/reports", icon: BarChart3 },
-  { title: "Team Members", url: "/manager/team", icon: Users },
-  { title: "Document Search", url: "/manager/search", icon: Search },
-  { title: "Settings", url: "/manager/settings", icon: Settings },
+  { title: "Upload Documents", url: "/upload", icon: Upload },
+  { title: "Document Assistant", url: "/chatbot", icon: MessageCircle },
+  { title: "Reports", url: "/manager/reports", icon: BarChart3 },
 ];
 
 export function ManagerSidebar() {
