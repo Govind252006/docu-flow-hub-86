@@ -59,12 +59,19 @@ const LoginPage = () => {
           variant: "destructive",
         });
       } else {
+        // Navigate immediately based on role (don't wait for onAuthStateChange)
+        const role = await getUserRole();
         toast({
           title: "Login successful",
-          description: "Welcome back!",
+          description: role ? `Welcome back, ${role}!` : "Welcome back!",
         });
-        
-        // Navigation will be handled by the useEffect when user state changes
+        if (role === 'admin') {
+          navigate('/admin/dashboard');
+        } else if (role === 'manager') {
+          navigate('/manager/dashboard');
+        } else {
+          navigate('/');
+        }
       }
     } catch (error) {
       toast({
@@ -90,15 +97,18 @@ const LoginPage = () => {
       );
       
       if (error) {
+        const msg = error.message?.includes('Email link is invalid or has expired')
+          ? 'The verification link is invalid or expired. Please try signing up again.'
+          : error.message;
         toast({
           title: "Signup failed",
-          description: error.message,
+          description: msg,
           variant: "destructive",
         });
       } else {
         toast({
           title: "Account created!",
-          description: "Please check your email to verify your account.",
+          description: "Check your email to verify. For faster testing, you can disable email confirmations in Supabase Auth settings.",
         });
       }
     } catch (error) {
